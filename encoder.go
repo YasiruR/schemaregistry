@@ -39,12 +39,33 @@ func NewEncoder(reg *Registry, subject *Subject) (*Encoder, error) {
 }
 
 // Encode return a byte slice with a avro encoded message. magic byte and schema id will be appended to its beginning
+//
 //	╔════════════════════╤════════════════════╤══════════════════════╗
 //	║ magic byte(1 byte) │ schema id(4 bytes) │ AVRO encoded message ║
 //	╚════════════════════╧════════════════════╧══════════════════════╝
-//
 func (s *Encoder) Encode(data interface{}) ([]byte, error) {
-	return encode(s.subject.Id, s.codec, data)
+	byts, ok := data.([]byte)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf(`data is not a byte slice, received '%T'`, data))
+	}
+
+	return s.encodeJSON(byts)
+}
+
+func (s *Encoder) encodeJSON(data []byte) ([]byte, error) {
+	native, _, err := s.codec.NativeFromTextual(data)
+	if err != nil {
+		return nil, errors.WithPrevious(err, fmt.Sprintf(`native from textual failed for schema [%d]`, s.subject.Id))
+	}
+
+	magic := encodePrefix(s.subject.Id)
+
+	bin, err := s.codec.BinaryFromNative(magic, native)
+	if err != nil {
+		return nil, errors.WithPrevious(err, fmt.Sprintf(`binary from native failed for schema [%d]`, s.subject.Id))
+	}
+
+	return bin, nil
 }
 
 // Decode returns the decoded go interface of avro encoded message and error if its unable to decode
@@ -62,7 +83,7 @@ func decodePrefix(byt []byte) int {
 	return int(binary.BigEndian.Uint32(byt[1:5]))
 }
 
-//Schema return the subject asociated with the Encoder
+// Schema return the subject asociated with the Encoder
 func (s *Encoder) Schema() string {
 	return s.subject.Schema
 }

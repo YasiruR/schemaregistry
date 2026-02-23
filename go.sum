@@ -114,8 +114,6 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tryfix/errors v1.0.0 h1:iosBQ6DOEYNBalFr4ROveNYfZBVJbKwp6Bfv0vkWkW0=
 github.com/tryfix/errors v1.0.0/go.mod h1:Es0J+aFXmsQxucPVSe5b+yt2yzmTYGSV+9LBgySEeGs=
-github.com/tryfix/kstream v1.0.0 h1:vngcgHMSSxU+9z6uYHD3m3i9Qm+IAyEMduQ79Eue4dA=
-github.com/tryfix/kstream v1.0.0/go.mod h1:qy2SvqNyxBOsaaLD0HiYZturwny5BwmoSyzR1T8g3oc=
 github.com/tryfix/kstream v1.1.2 h1:gttLoQxH0nlH+4YEIGKUzKXw2rBlTEs3qgAYgGZePO0=
 github.com/tryfix/kstream v1.1.2/go.mod h1:qy2SvqNyxBOsaaLD0HiYZturwny5BwmoSyzR1T8g3oc=
 github.com/tryfix/log v1.0.2 h1:cCgYi1KlMTbkoBbUWbS8YD2zPYMJlOmE2+aHQS6i/dM=
