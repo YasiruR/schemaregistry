@@ -1,4 +1,4 @@
-module github.com/tryfix/schemaregistry
+module github.com/YasiruR/schemaregistry
 
 go 1.14
 
