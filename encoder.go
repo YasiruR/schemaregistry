@@ -44,16 +44,16 @@ func NewEncoder(reg *Registry, subject *Subject) (*Encoder, error) {
 //	║ magic byte(1 byte) │ schema id(4 bytes) │ AVRO encoded message ║
 //	╚════════════════════╧════════════════════╧══════════════════════╝
 func (s *Encoder) Encode(data interface{}) ([]byte, error) {
+	if byts, ok := data.([]byte); ok {
+		return encodeJSON(s.subject.Id, s.codec, byts)
+	}
+
 	byts, err := json.Marshal(data)
 	if err != nil {
 		return nil, errors.WithPrevious(err, fmt.Sprintf(`json marshal failed for schema [%d]`, s.subject.Id))
 	}
 
 	return encodeJSON(s.subject.Id, s.codec, byts)
-}
-
-func (s *Encoder) EncodeJSON(data []byte) ([]byte, error) {
-	return encodeJSON(s.subject.Id, s.codec, data)
 }
 
 // Decode returns the decoded go interface of avro encoded message and error if its unable to decode

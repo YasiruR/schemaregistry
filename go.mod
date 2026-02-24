@@ -10,5 +10,5 @@ require (
 	github.com/tryfix/errors v1.0.0
 	github.com/tryfix/kstream v1.1.2
 	github.com/tryfix/log v1.0.2
-	gopkg.in/linkedin/goavro.v1 v1.0.5 // indirect
+	github.com/tryfix/schemaregistry v1.1.5
 )
