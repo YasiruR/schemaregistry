@@ -44,28 +44,16 @@ func NewEncoder(reg *Registry, subject *Subject) (*Encoder, error) {
 //	║ magic byte(1 byte) │ schema id(4 bytes) │ AVRO encoded message ║
 //	╚════════════════════╧════════════════════╧══════════════════════╝
 func (s *Encoder) Encode(data interface{}) ([]byte, error) {
-	byts, ok := data.([]byte)
-	if !ok {
-		return nil, errors.New(fmt.Sprintf(`data is not a byte slice, received '%T'`, data))
+	byts, err := json.Marshal(data)
+	if err != nil {
+		return nil, errors.WithPrevious(err, fmt.Sprintf(`json marshal failed for schema [%d]`, s.subject.Id))
 	}
 
-	return s.encodeJSON(byts)
+	return encodeJSON(s.subject.Id, s.codec, byts)
 }
 
-func (s *Encoder) encodeJSON(data []byte) ([]byte, error) {
-	native, _, err := s.codec.NativeFromTextual(data)
-	if err != nil {
-		return nil, errors.WithPrevious(err, fmt.Sprintf(`native from textual failed for schema [%d]`, s.subject.Id))
-	}
-
-	magic := encodePrefix(s.subject.Id)
-
-	bin, err := s.codec.BinaryFromNative(magic, native)
-	if err != nil {
-		return nil, errors.WithPrevious(err, fmt.Sprintf(`binary from native failed for schema [%d]`, s.subject.Id))
-	}
-
-	return bin, nil
+func (s *Encoder) EncodeJSON(data []byte) ([]byte, error) {
+	return encodeJSON(s.subject.Id, s.codec, data)
 }
 
 // Decode returns the decoded go interface of avro encoded message and error if its unable to decode
@@ -88,19 +76,13 @@ func (s *Encoder) Schema() string {
 	return s.subject.Schema
 }
 
-func encode(subjectId int, codec *goavro.Codec, data interface{}) ([]byte, error) {
-	byt, err := json.Marshal(data)
-	if err != nil {
-		return nil, errors.WithPrevious(err, fmt.Sprintf(`json marshal failed for schema [%d]`, subjectId))
-	}
-
-	native, _, err := codec.NativeFromTextual(byt)
+func encodeJSON(subjectId int, codec *goavro.Codec, data []byte) ([]byte, error) {
+	native, _, err := codec.NativeFromTextual(data)
 	if err != nil {
 		return nil, errors.WithPrevious(err, fmt.Sprintf(`native from textual failed for schema [%d]`, subjectId))
 	}
 
 	magic := encodePrefix(subjectId)
-
 	bin, err := codec.BinaryFromNative(magic, native)
 	if err != nil {
 		return nil, errors.WithPrevious(err, fmt.Sprintf(`binary from native failed for schema [%d]`, subjectId))
